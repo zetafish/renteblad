@@ -1,8 +1,21 @@
 (ns renteblad.abnamro
   (:require [java-time :as t]))
 
+;; ABN AMRO
+;; - budgethypotheek, aflossijngsvrij
+
 (def renteblad
-  [{:datum #inst "2018-01-22"
+
+  [{:datum #inst "2018-01-23"
+    :tarieven [:nhg :<=65% :<=85% :>85%]
+    :looptijden [:variabel :1 :0+2 :1+2 :5 :6 :5+2 :10 :10+2 :15 :15+2 :20 :25 :30]
+    :rente
+    [[1.70 1.59 1.59 1.59 1.74 1.84 1.90 2.03 2.30 2.74 2.94 2.99 4.50 4.60]
+     [1.70 1.59 1.59 1.59 1.74 1.84 1.90 2.03 2.30 2.74 2.94 2.99 4.50 4.60]
+     [1.90 1.79 1.79 1.79 1.94 2.04 2.10 2.23 2.50 2.94 3.14 3.19 4.70 4.80]
+     [2.25 2.14 2.14 2.14 2.29 2.39 2.45 2.58 2.85 3.29 3.49 3.54 5.05 5.15]]}
+
+   {:datum #inst "2018-01-22"
     :tarieven [:nhg :<=65% :<=85% :>85%]
     :looptijden [:variabel :1 :0+2 :1+2 :5 :6 :5+2 :10 :10+2 :15 :15+2 :20 :25 :30]
     :rente
@@ -84,9 +97,6 @@
      [2.70 2.34 2.34 2.34 2.34 2.39 2.39 2.64 2.90 3.26 3.46 3.51 4.60 4.70]]}
    ])
 
-(show :>85% :1+2)
-(show :<=85% :1+2)
-
 (defn index-of
  [x coll]
  (first (keep-indexed (fn [i v]
@@ -103,8 +113,8 @@
 (defn historie
   [tarief looptijd]
   (->> renteblad
-       (map #(hash-map :datum (t/format (t/instant (:datum )))
-                       :rente (rente  tarief looptijd)))
+       (map #(hash-map :datum (t/format (t/instant (:datum %)))
+                       :rente (rente % tarief looptijd)))
        (sort-by :datum)
        (reverse)))
 
@@ -114,3 +124,8 @@
   (doseq [x (historie tarief looptijd)]
     (println x))
   (println))
+
+
+(show :<=85% :variabel)
+(show :<=85% :5)
+(show :>85% :5)
